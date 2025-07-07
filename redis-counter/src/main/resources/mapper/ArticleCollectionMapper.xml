@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.johnfnash.learn.redis.counter.mapper.ArticleCollectionMapper">
+    <sql id="Base_Column_List">
+        id,
+        article_id,
+        user_id,
+        create_time
+    </sql>
+
+    <select id="selectBatch" resultType="com.johnfnash.learn.redis.counter.entity.ArticleCollection">
+        select
+        <include refid="Base_Column_List"/>
+        from article_collection
+        where (article_id, user_id) in
+        <foreach item="item" collection="list" separator="," open="(" close=")">
+            (#{item.articleId}, #{item.userId})
+        </foreach>
+    </select>
+</mapper>

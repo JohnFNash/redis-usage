@@ -1,0 +1,100 @@
+server:
+  port: 9113
+
+spring:
+  application:
+    name: redis-counter
+
+  redis:
+    database: 0
+    host: localhost
+    port: 6379
+    #password: ~
+    timeout: 1000
+
+    lettuce:
+      pool:
+        enabled: true
+        max-active: 8
+        max-idle: 8
+        max-wait: 1000
+        min-idle: 0
+        time-between-eviction-runs: 1000
+
+    redisson:
+      config:
+        single-server-config:
+          address: "redisson://localhost:6379"
+          #password: ~
+          database: 0
+          connection-pool-size: 64
+          idle-connection-timeout: 10000
+          connect-timeout: 10000
+          timeout: 3000
+          retry-attempts: 3
+          retry-interval: 1500
+          reconnection-timeout: 60000
+          failed-servers-limit: 3
+
+
+  # 数据源
+  # mysql
+  datasource:
+    url: jdbc:mysql://localhost:3306/redis?useSSL=false&serverTimezone=Asia/Shanghai&characterEncoding=utf8&allowMultiQueries=true  # 时区需显式指定
+    username: root
+    password: 123456
+    driver-class-name: com.mysql.jdbc.Driver  # 5.x专用驱动类
+
+  # kafka
+  kafka:
+    bootstrap-servers: localhost:9092  # Kafka 服务器地址
+    producer:
+      retries: 3                          # 发送失败后的重试次数
+      batch-size: 16384                   # 批量发送的数据量
+      buffer-memory: 33554432             # 缓冲区大小
+      key-serializer: org.apache.kafka.common.serialization.StringSerializer
+      #value-serializer: org.apache.kafka.common.serialization.StringSerializer
+      value-serializer: org.springframework.kafka.support.serializer.JsonSerializer
+
+    consumer:
+      group-id: redis-counter-group       # 消费者组 ID
+      auto-offset-reset: earliest         # 无初始偏移量时从起始位置读取
+      enable-auto-commit: false           # 关闭自动提交偏移量
+      auto-commit-interval: 100           # 自动提交间隔（毫秒）
+      key-deserializer: org.apache.kafka.common.serialization.StringDeserializer
+      #value-deserializer: org.apache.kafka.common.serialization.StringDeserializer # 简单值使用 JSON 序列化
+      value-deserializer: org.springframework.kafka.support.serializer.JsonDeserializer
+      properties:
+        max.pool.records: 50 #批量获取消息数
+        spring:
+          json:
+            trusted:
+              packages: com.johnfnash.learn.redis.counter.kafka.vo # 允许的JSON包，可以配置多个
+
+# 定时任务
+schedule:
+  userArticleCount:
+    cron: 0 0/2 * * * ?
+  articleReadCount:
+    cron: 0 0/2 * * * ?
+  articleCollectionList:
+    cron: 0 0/2 * * * ?
+  userFollowList:
+    cron: 0 0/2 * * * ?
+
+
+#mybatisPlus
+mybatis-plus:
+  mapper-locations: classpath:/mapper/**/*Mapper.xml,classpath:/mapper/**/*MapperV2.xml
+  typeAliasesPackage: com.johnfnash.learn.redis.counter.entity
+  configuration:
+    # 不可改为false，否则实体字段映射会出问题
+    map-underscore-to-camel-case: true
+    # 一级缓存  statement关闭，session开启
+    local-cache-scope: statement
+    cache-enabled: false
+    jdbc-type-for-null: 'null'
+    # org.apache.ibatis.logging.nologging.NoLoggingImpl
+    # org.apache.ibatis.logging.slf4j.Slf4jImpl
+    # org.apache.ibatis.logging.stdout.StdOutImpl
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl

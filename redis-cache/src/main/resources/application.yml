@@ -1,0 +1,42 @@
+server:
+  port: 9111
+
+spring:
+  application:
+    name: redis-cache
+
+  redis:
+    database: 0
+    host: localhost
+    port: 6379
+    password:
+    timeout: 1000
+
+    lettuce:
+      pool:
+        enabled: true
+        max-active: 8
+        max-idle: 8
+        max-wait: 1000
+        min-idle: 0
+        time-between-eviction-runs: 1000
+
+redis:
+    time-to-live:
+      seconds: 60
+
+management:
+  endpoints:
+    web:
+      exposure:
+        #开放页面中的所有端口(endpoint)
+        include: '*'
+      #访问的页面 ip+port/monitor  默认是/actuator
+      base-path: /monitor
+  server:
+    #监听端口
+    port: 7000
+  metrics:
+    export:
+      prometheus:
+        enabled: true

@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.johnfnash.learn.redis.counter.mapper.UserMapper">
+
+    <update id="updateFollowCountBatch">
+        <foreach collection="list" item="user" separator=";">
+            UPDATE user SET follow_count = #{user.totalFollows} WHERE id = #{user.userId}
+        </foreach>
+    </update>
+
+    <update id="updateFansCountBatch">
+        <foreach collection="list" item="user" separator=";">
+            UPDATE user SET fans_count = #{user.totalFans} WHERE id = #{user.followedUserId}
+        </foreach>
+    </update>
+</mapper>

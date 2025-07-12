@@ -1,0 +1,33 @@
+spring:
+  redis:
+    database: 0
+    host: localhost
+    port: 6379
+    password:
+    timeout: 1000
+
+    lettuce:
+      pool:
+        enabled: true
+        max-active: 10
+        max-idle: 8
+        max-wait: 1000
+        min-idle: 0
+        time-between-eviction-runs: 1000
+
+  session:
+    redis:
+      namespace: "r:s"      # 定义存储在 Redis 中的 session 数据的命名空间
+      flush-mode: on_save             # 每次保存或更新 session 时立即将数据同步到 Redis
+      save-mode: always               # 每次请求结束时都保存 session
+    store-type: redis
+  application:
+    name: redis-session
+
+server:
+  port: 9116
+  # 自定义Token（Cookie）的名字
+  servlet:
+    session:
+      cookie:
+        name: X-REDIS-TOKEN
